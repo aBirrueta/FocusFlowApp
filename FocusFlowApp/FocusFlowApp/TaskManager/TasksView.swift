@@ -8,32 +8,40 @@
 import SwiftUI
 
 struct TasksView: View {
-    var body: some View {
-        NavigationStack{
-            ZStack{
-                Rectangle()
-                    .foregroundColor(.gray)
-                    .frame(height: 70
-                    )
-                    .background(.clear)
-                    .cornerRadius(10)
-                    .padding()
-                HStack{
-                    Button("o") {
-                    
+    // Create some example tasks
+        @State private var tasks: [Task] = [
+            Task(title: "Learn SwiftUI", isComplete: false, priority: .medium),
+            Task(title: "Build FocusFlowApp", isComplete: false, priority: .medium)
+        ]
+        
+        var body: some View {
+            HStack{
+                Text("Tasks")
+                Button("+") {
+                    AddTaskView()
+                }
+                .buttonStyle(.bordered)
+                
+            }
+            NavigationStack {
+                List {
+                    ForEach(tasks) { task in
+                        HStack{
+                            Text(task.title)
+                            if task.priority == .medium{
+                                Text("!!")
+                            }
+                            if task.priority == .high{
+                                Text("!!!")
+                            }
+                            if task.priority == .low{
+                                Text("!")
+                            }
+                        }
                     }
-                    .foregroundStyle(.green)
-                    .buttonStyle(.bordered)
-                    
-                    Text("Title")
-                    
-                    Text("urgency")
-                    
-                    Text("due date")
                 }
             }
         }
-    }
 }
 
 #Preview {
