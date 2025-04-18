@@ -9,7 +9,10 @@ import SwiftUI
 
 struct TaskManagerView: View {
     var body: some View {
-        TasksView()
+        ZStack{
+            TasksView()
+            AddTaskView()
+        }
         
     }
 }

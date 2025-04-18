@@ -9,7 +9,8 @@ import SwiftUI
 
 struct TasksView: View {
     // Create some example tasks
-        @State private var tasks: [Task] = [
+    @State var showingAddTask = false
+            @State private var tasks: [Task] = [
             Task(title: "Learn SwiftUI", isComplete: false, priority: .medium),
             Task(title: "Build FocusFlowApp", isComplete: false, priority: .medium)
         ]
@@ -18,7 +19,7 @@ struct TasksView: View {
             HStack{
                 Text("Tasks")
                 Button("+") {
-                    AddTaskView()
+                    showingAddTask = true
                 }
                 .buttonStyle(.bordered)
                 
@@ -41,6 +42,13 @@ struct TasksView: View {
                     }
                 }
             }
+            .sheet(isPresented: $showingAddTask){
+                VStack{
+                    Text("Task Name")
+                    Text("Due Date")
+                    Text("priority")
+            }
+            
         }
 }
 
