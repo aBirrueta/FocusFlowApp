@@ -11,7 +11,6 @@ struct TaskManagerView: View {
     var body: some View {
         ZStack{
             TasksView()
-            AddTaskView()
         }
         
     }
