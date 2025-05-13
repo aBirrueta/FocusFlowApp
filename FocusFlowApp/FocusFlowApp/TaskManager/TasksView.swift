@@ -8,54 +8,111 @@
 import SwiftUI
 
 struct TasksView: View {
-    // Create some example tasks
     @State var taskName: String = ""
     @State var showingAddTask = false
+    @State private var selectedPriority: Task.Priority = .medium
+    @State private var selectedDueDate: Date = Date()
     @State private var tasks: [Task] = [
-        Task(title: "Learn SwiftUI", isComplete: false, priority: .medium),
-        Task(title: "Build FocusFlowApp", isComplete: false, priority: .medium)
+    //examples
+    Task(title: "clean room", isComplete: false, priority: .medium),
+    Task(title: "study for test", isComplete: false, priority: .medium)
     ]
     
     var body: some View {
-        HStack{
-            Text("Tasks")
-            Button("+") {
-                showingAddTask = true
+        VStack {
+            HStack {
+                Text("Tasks")
+                    .font(.title)
+    
+                Button(action: {showingAddTask = true}) {
+                    Image(systemName: "plus.circle.fill")
+                        .font(.title)
+                }
             }
-            .buttonStyle(.bordered)
+            .padding()
             
-        }
-        NavigationStack {
             List {
                 ForEach(tasks) { task in
-                    HStack{
+                    HStack {
                         Text(task.title)
-                        if task.priority == .medium{
-                            Text("!!")
+                        Spacer()
+                        
+                        if task.dueDate != nil {
+                            Text(task.dueDate!, style: .date)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
                         }
-                        if task.priority == .high{
-                            Text("!!!")
+                        
+                        priorityLabel(for: task.priority)
+                    }
+                }
+            }
+        }
+        .sheet(isPresented: $showingAddTask) {
+            NavigationStack {
+                Form {
+                    TextField("Task Name", text: $taskName)
+                    
+                    DatePicker(
+                        "Due Date",
+                        selection: $selectedDueDate,
+                        displayedComponents: .date
+                    )
+                    
+                    Picker("Priority", selection: $selectedPriority) {
+                        Text("Low").tag(Task.Priority.low)
+                        Text("Medium").tag(Task.Priority.medium)
+                        Text("High").tag(Task.Priority.high)
+                    }
+                    .pickerStyle(.segmented)
+                }
+                .navigationTitle("Create Task")
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Cancel") {
+                            showingAddTask = false
                         }
-                        if task.priority == .low{
-                            Text("!")
+                    }
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("Add") {
+                            addTask()
+                            showingAddTask = false
                         }
                     }
                 }
             }
         }
-        .sheet(isPresented: $showingAddTask){
-            
-            Form{
-                TextField("Task Name", text: $taskName )
-                Text("Due Date")
-                Text("priority")
-            }
+    }
+    
+    private func priorityLabel(for priority: Task.Priority) -> some View {
+        switch priority {
+        case .low:
+            return Text("!").foregroundColor(.blue)
+        case .medium:
+            return Text("!!").foregroundColor(.orange)
+        case .high:
+            return Text("!!!").foregroundColor(.red)
         }
     }
-    /*
-     #Preview {
-     TasksView()
-     }
-     */
+    
+    private func addTask() {
+        guard !taskName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            return
+        }
+        
+        // Creates new task with info put in form
+        let newTask = Task(
+            title: taskName,
+            isComplete: false,
+            dueDate: selectedDueDate,
+            priority: selectedPriority
+        )
+        
+        tasks.append(newTask)
+        
+        // clears form for next use
+        taskName = ""
+        selectedPriority = .medium
+        selectedDueDate = Date()
+    }
 }
-     
