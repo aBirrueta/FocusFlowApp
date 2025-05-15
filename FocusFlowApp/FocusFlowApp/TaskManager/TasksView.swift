@@ -32,23 +32,53 @@ struct TasksView: View {
             .padding()
             
             List {
-                ForEach(tasks) { task in
-                    HStack {
-                        Text(task.title)
-                        Spacer()
-                        
-                        if task.dueDate != nil {
-                            Text(task.dueDate!, style: .date)
-                                .font(.caption)
-                                .foregroundColor(.secondary)
+                Section(header: Text("Tasks")) {
+                    ForEach(tasks.filter { !$0.isComplete }) { task in
+                        HStack {
+                            // Complete Button
+                            Button(action:{toggleTaskCompletion(task)}){
+                                Image(systemName: task.isComplete ? "circle.fill" : "circle")
+                            }
+                            Text(task.title)
+                            if task.dueDate != nil {
+                                                        Text(task.dueDate!, style: .date)
+                                                            .font(.caption)
+                                                            .foregroundColor(.secondary)
+                                                    }
+                            Spacer()
+                            
+                            if task.dueDate != nil {
+                                Text(task.dueDate!, style: .date)
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            priorityLabel(for: task.priority)
                         }
-                        
-                        priorityLabel(for: task.priority)
+                        .swipeActions(edge: .trailing) {
+                            Button(role: .destructive) {
+                                deleteTask(task)
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+                        }
+                    }
+                }
+                
+                // Completed Tasks
+                Section(header: Text("Completed Tasks")) {
+                    ForEach(tasks.filter { $0.isComplete }) { task in
+                        HStack {
+                            Button(action: {
+                                toggleTaskCompletion(task)
+                            }) {
+                                Image(systemName: "checkmark.circle")
+                            }
+                            Text(task.title)
+                        }
                     }
                 }
             }
-        }
-        .sheet(isPresented: $showingAddTask) {
+        }        .sheet(isPresented: $showingAddTask) {
             NavigationStack {
                 Form {
                     TextField("Task Name", text: $taskName)
@@ -114,5 +144,17 @@ struct TasksView: View {
         taskName = ""
         selectedPriority = .medium
         selectedDueDate = Date()
+    }
+    private func toggleTaskCompletion(_ task: Task) {
+            if let index = tasks.firstIndex(where: { $0.id == task.id }) {
+                tasks[index].isComplete.toggle()
+            }
+        }
+        
+        // Function to delete a task
+    private func deleteTask(_ task: Task) {
+        if let index = tasks.firstIndex(where: { $0.id == task.id }) {
+            tasks.remove(at: index)
+        }
     }
 }
