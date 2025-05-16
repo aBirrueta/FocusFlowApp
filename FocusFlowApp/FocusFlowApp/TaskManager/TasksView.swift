@@ -13,9 +13,6 @@ struct TasksView: View {
     @State private var selectedPriority: Task.Priority = .medium
     @State private var selectedDueDate: Date = Date()
     @State private var tasks: [Task] = [
-    //examples
-    Task(title: "clean room", isComplete: false, priority: .medium),
-    Task(title: "study for test", isComplete: false, priority: .medium)
     ]
     
     var body: some View {
@@ -36,22 +33,17 @@ struct TasksView: View {
                     ForEach(tasks.filter { !$0.isComplete }) { task in
                         HStack {
                             // Complete Button
-                            Button(action:{toggleTaskCompletion(task)}){
-                                Image(systemName: task.isComplete ? "circle.fill" : "circle")
+                            Button("o") {
+                                toggleTaskCompletion(task)
                             }
+                            .buttonStyle(.bordered)
                             Text(task.title)
-                            if task.dueDate != nil {
-                                                        Text(task.dueDate!, style: .date)
-                                                            .font(.caption)
-                                                            .foregroundColor(.secondary)
-                                                    }
-                            Spacer()
-                            
                             if task.dueDate != nil {
                                 Text(task.dueDate!, style: .date)
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             }
+                            Spacer()
                             priorityLabel(for: task.priority)
                         }
                         .swipeActions(edge: .trailing) {
@@ -65,13 +57,13 @@ struct TasksView: View {
                 }
                 
                 // Completed Tasks
-                Section(header: Text("Completed Tasks")) {
+                Section(header: Text("Completed")) {
                     ForEach(tasks.filter { $0.isComplete }) { task in
                         HStack {
                             Button(action: {
                                 toggleTaskCompletion(task)
                             }) {
-                                Image(systemName: "checkmark.circle")
+                                Image(systemName: "circle.fill")
                             }
                             Text(task.title)
                         }
@@ -145,6 +137,7 @@ struct TasksView: View {
         selectedPriority = .medium
         selectedDueDate = Date()
     }
+    
     private func toggleTaskCompletion(_ task: Task) {
             if let index = tasks.firstIndex(where: { $0.id == task.id }) {
                 tasks[index].isComplete.toggle()
