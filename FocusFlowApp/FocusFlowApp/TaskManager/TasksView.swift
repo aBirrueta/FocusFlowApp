@@ -14,7 +14,8 @@ struct TasksView: View {
     @State private var selectedDueDate: Date = Date()
     @State private var tasks: [Task] = [
     ]
-    
+    @StateObject private var model = Task(title: "", isComplete: false, priority: .medium)
+
     var body: some View {
         VStack {
             HStack {
@@ -34,6 +35,7 @@ struct TasksView: View {
                         HStack {
                             // Complete Button
                             Button("o") {
+                                print("complete task pressed")
                                 toggleTaskCompletion(task)
                             }
                             .buttonStyle(.bordered)
@@ -139,8 +141,11 @@ struct TasksView: View {
     }
     
     private func toggleTaskCompletion(_ task: Task) {
+        print("toggleTaskCompletion")
             if let index = tasks.firstIndex(where: { $0.id == task.id }) {
+                print(index)
                 tasks[index].isComplete.toggle()
+                tasks = tasks
             }
         }
         
