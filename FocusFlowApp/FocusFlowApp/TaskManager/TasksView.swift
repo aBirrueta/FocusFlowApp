@@ -34,11 +34,11 @@ struct TasksView: View {
                     ForEach(tasks.filter { !$0.isComplete }) { task in
                         HStack {
                             // Complete Button
-                            Button("o") {
-                                print("complete task pressed")
+                            Button(action: {
                                 toggleTaskCompletion(task)
+                            }) {
+                                Image(systemName: "circle")
                             }
-                            .buttonStyle(.bordered)
                             Text(task.title)
                             if task.dueDate != nil {
                                 Text(task.dueDate!, style: .date)
@@ -145,7 +145,7 @@ struct TasksView: View {
             if let index = tasks.firstIndex(where: { $0.id == task.id }) {
                 print(index)
                 tasks[index].isComplete.toggle()
-                tasks = tasks
+                tasks[index] = tasks[index]
             }
         }
         
