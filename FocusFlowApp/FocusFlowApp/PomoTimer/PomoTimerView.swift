@@ -11,9 +11,43 @@ struct PomoTimerView: View {
     @State var timeRemaining = 60
     @State private var isRunning = false
     @State private var timer: Timer?
+    @State private var focusDuration = 60 * 25
+    @State private var shortBreakDuration = 60 * 5
+    @State private var longBreakDuration = 60 * 15
+    @State private var selectedInterval = TimerInterval.focus
+    //time intervals
+    enum TimerInterval: String, CaseIterable{
+        case focus = "Focus"
+        case shortBreak = "Short Break"
+        case longBreak = "Long Break"
+    }
+        //duration of each interval
+        private func getDuration(for interval: TimerInterval) -> Int {
+                switch interval {
+                case .focus:
+                    return focusDuration
+                case .shortBreak:
+                    return shortBreakDuration
+                case .longBreak:
+                    return longBreakDuration
+                }
+            }
+
     var body: some View {
         Text("PomoTimer")
             .font(.title)
+        Picker("Timer Interval", selection: $selectedInterval) {
+                        ForEach(TimerInterval.allCases, id: \.self) { interval in
+                            Text(interval.rawValue).tag(interval)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .onChange(of: selectedInterval) { _, newValue in
+                        if !isRunning {
+                            timeRemaining = getDuration(for: newValue)
+                        }
+                    }
+
             Text("\(timeString(time: timeRemaining))")
             .font(.largeTitle)
         Button(action: {
